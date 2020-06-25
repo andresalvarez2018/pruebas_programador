@@ -2,7 +2,7 @@
 session_start();
 $server = "localhost";
 $user = "root";
-$pass = "";
+$pass = "P@ss0102";
 $bd = "prueba";
 
 

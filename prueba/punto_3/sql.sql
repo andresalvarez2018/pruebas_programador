@@ -1,36 +1,31 @@
 CREATE database prueba ;
 
-CREATE TABLE appx_educationlevel (
-  id INT NOT NULL AUTO_INCREMENT,
-  description VARCHAR(45) NULL,
-  PRIMARY KEY (id));
+CREATE TABLE `appx_educationlevel1` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) 
 
-CREATE TABLE appx_department (
-  id INT NOT NULL AUTO_INCREMENT,
-  department_name VARCHAR(45) NULL,
-  department_city VARCHAR(45) NULL,
-  PRIMARY KEY (id));
+CREATE TABLE `appx_department` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `department_name` varchar(45) DEFAULT NULL,
+  `department_city` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) 
 
-CREATE TABLE appx_employee (
-  id INT NOT NULL AUTO_INCREMENT,
-  firstname VARCHAR(45) NULL,
-  lastname VARCHAR(45) NULL,
-  department_id INT NULL,
-  salary INT NULL,
-  educationlevel_id INT NULL,
-  PRIMARY KEY (id),
-  INDEX employee_department_idx (department_id, ASC),
-  INDEX employee_educationlevel_idx (educationlevel_id ASC),
-  CONSTRAINT employee_department
-    FOREIGN KEY (department_id)
-    REFERENCES appx_department (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT employee_educationlevel
-    FOREIGN KEY (educationlevel_id)
-    REFERENCES appx_educationlevel (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+CREATE TABLE `appx_employee` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(45) DEFAULT NULL,
+  `lastname` varchar(45) DEFAULT NULL,
+  `department_id` int(11) DEFAULT NULL,
+  `salary` int(11) DEFAULT NULL,
+  `educationlevel_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `employee_department_idx` (`department_id`),
+  KEY `employee_educationlevel_idx` (`educationlevel_id`),
+  CONSTRAINT `employee_department` FOREIGN KEY (`department_id`) REFERENCES `appx_department` (`id`),
+  CONSTRAINT `employee_educationlevel` FOREIGN KEY (`educationlevel_id`) REFERENCES `appx_educationlevel` (`id`)
+) 
 
 INSERT INTO appx_department (department_name, department_city) VALUES ('cundinamarca', 'bogota');
 INSERT INTO appx_department (department_name, department_city) VALUES ('cundinamarca', 'chia');

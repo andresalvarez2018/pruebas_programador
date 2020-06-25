@@ -22,6 +22,9 @@
     </script>
 </head>
 <body>
+<nav class="navbar navbar-light bg-light">
+  <span class="navbar-brand mb-0 h1">Prueba Programación</span>
+</nav>
     <div class="container mt-3">        
         <table class="table">
         <thead class="thead-light">

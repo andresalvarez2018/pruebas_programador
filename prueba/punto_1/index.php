@@ -1,5 +1,5 @@
 <?php
-$cantidad=0;
+$cantidad=6;
 $array = Array();
 
 if ($cantidad == 0) {

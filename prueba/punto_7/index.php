@@ -1,53 +1,88 @@
 <?php
-session_start();
-$server = "localhost";
-$user = "root";
-$pass = "P@ss0102";
-$bd = "prueba";
+include "config.php";
+include "utils.php";
 
 
-$conexion = mysqli_connect($server, $user, $pass,$bd)
-or die("Ha sucedido un error inexperado en la conexion de la base de datos");
+$dbConn =  connect($db);
 
 
- $sql = "SELECT 
- appx_employee.lastname AS apellido,
- appx_educationlevel.description
-     FROM
-         appx_employee
-             INNER JOIN
-         appx_department ON appx_employee.department_id = appx_department.id
-             INNER JOIN
-         appx_educationlevel ON appx_educationlevel.id = appx_employee.educationlevel_id
-     WHERE
-         appx_employee.salary > 300000
-     ORDER BY apellido ASC";
-     
-mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
-
-if(!$result = mysqli_query($conexion, $sql)) die();
-
-$registros = array(); //creamos un array
-
-while($row = mysqli_fetch_array($result))
+if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
-    $apellido=$row['apellido'];
-    $description=$row['description'];
-    
-    $registros[] = array('apellido'=> $apellido,'description'=> $description);
-
+    if (isset($_GET['id']))
+    {
+     
+      $sql = $dbConn->prepare("SELECT * FROM appx_employee where id=:id");
+      $sql->bindValue(':id', $_GET['id']);
+      $sql->execute();
+      header("HTTP/1.1 200 OK");
+      echo json_encode(  $sql->fetch(PDO::FETCH_ASSOC)  );
+      exit();
+	  }
+    else {
+      
+      $sql = $dbConn->prepare("SELECT * FROM appx_employee");
+      $sql->execute();
+      $sql->setFetchMode(PDO::FETCH_ASSOC);
+      header("HTTP/1.1 200 OK");
+      echo json_encode( $sql->fetchAll()  );
+      exit();
+	}
 }
 
 
-$close = mysqli_close($conexion)
-or die("Ha sucedido un error inexperado en la desconexion de la base de datos");
+if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    $input = $_POST;
+    $sql = "INSERT INTO appx_employee
+          (firstname, lastname, department_id, salary,educationlevel_id)
+          VALUES
+          (:firstname, :lastname, :department_id, :salary,:educationlevel_id)";
+    $statement = $dbConn->prepare($sql);
+    bindAllValues($statement, $input);
+    $statement->execute();
+    $postId = $dbConn->lastInsertId();
+    if($postId)
+    {
+      $input['id'] = $postId;
+      header("HTTP/1.1 200 OK");
+      echo json_encode($input);
+      exit();
+	 }
+}
 
 
+if ($_SERVER['REQUEST_METHOD'] == 'DELETE')
+{
+	$id = $_GET['id'];
+  $statement = $dbConn->prepare("DELETE FROM appx_employee where id=:id");
+  $statement->bindValue(':id', $id);
+  $statement->execute();
+	header("HTTP/1.1 200 OK");
+	exit();
+}
 
-header("HTTP/1.1 200 OK");
-echo json_encode($registros);
 
+if ($_SERVER['REQUEST_METHOD'] == 'PUT')
+{
+    $input = $_GET;
+    $postId = $input['id'];
+    $fields = getParams($input);
+
+    $sql = "
+          UPDATE appx_employee
+          SET $fields
+          WHERE id='$postId'
+           ";
+
+    $statement = $dbConn->prepare($sql);
+    bindAllValues($statement, $input);
+
+    $statement->execute();
+    header("HTTP/1.1 200 OK");
+    exit();
+}
+
+
+header("HTTP/1.1 400 Bad Request");
 
 ?>
-
-
